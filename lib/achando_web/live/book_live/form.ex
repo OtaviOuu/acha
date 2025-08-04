@@ -18,6 +18,7 @@ defmodule AchandoWeb.BookLive.Form do
         <.input field={@form[:description]} type="text" label="Description" />
         <.input field={@form[:image_url]} type="text" label="Image url" />
         <.input field={@form[:price]} type="number" label="Price" step="any" />
+        <.input field={@form[:code]} type="text" label="Code" />
         <footer>
           <.button phx-disable-with="Saving..." variant="primary">Save Book</.button>
           <.button navigate={return_path(@return_to, @book)}>Cancel</.button>
