@@ -21,6 +21,13 @@ defmodule Achando.Books do
     Repo.all(Book)
   end
 
+  def list_books_ordered_by_time do
+    Book
+    |> order_by(desc: :inserted_at)
+    |> limit(10)
+    |> Repo.all()
+  end
+
   @doc """
   Gets a single book.
 

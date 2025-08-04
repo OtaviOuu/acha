@@ -12,11 +12,11 @@ defmodule AchandoWeb.HomeLive.Index do
       Books.subscribe_books()
     end
 
-    books = Books.list_books()
+    books = Books.list_books_ordered_by_time()
 
     socket =
       socket
-      |> assign(:books, books)
+      |> stream(:books, books, limit: 10, reset: true, at: 0)
 
     {:ok, socket}
   end
@@ -24,8 +24,12 @@ defmodule AchandoWeb.HomeLive.Index do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <div class="flex flex-row justify-center gap-6 flex-wrap p-4" id="books-grid">
-        <.books_grid :for={book <- @books} book={book} />
+      <div
+        class="flex flex-row justify-center gap-6 flex-wrap p-4"
+        phx-update="stream"
+        id="books-grid"
+      >
+        <.books_grid :for={{dom_id, book} <- @streams.books} book={book} id={dom_id} />
       </div>
     </Layouts.app>
     """
@@ -33,9 +37,11 @@ defmodule AchandoWeb.HomeLive.Index do
 
   attr :book, Book, required: true, doc: "the book to display"
 
+  attr :id, :string, required: true
+
   def books_grid(assigns) do
     ~H"""
-    <div class="card bg-base-100 w-64 shadow-sm hover:shadow-md transition-shadow">
+    <div class="card bg-base-100 w-64 shadow-sm hover:shadow-md transition-shadow" id={@id}>
       <figure class="px-4 pt-4">
         <img src={@book.image_url} alt="Livro" class="rounded-xl w-full h-80 object-cover" />
       </figure>
@@ -50,7 +56,8 @@ defmodule AchandoWeb.HomeLive.Index do
 
   def handle_info({:found_new_book, book}, socket) do
     socket =
-      assign(socket, :books, [book | socket.assigns.books])
+      socket
+      |> stream_insert(:books, book, at: 0, limit: 10)
 
     {:noreply, socket}
   end
