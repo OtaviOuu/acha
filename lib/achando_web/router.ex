@@ -22,7 +22,7 @@ defmodule AchandoWeb.Router do
   scope "/", AchandoWeb do
     pipe_through :browser
 
-    live "/home", HomeLive.Index, :index
+    live "/", HomeLive.Index, :index
 
     live "/books", BookLive.Index, :index
     live "/books/new", BookLive.Form, :new
